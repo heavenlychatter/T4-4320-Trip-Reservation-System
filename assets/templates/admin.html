@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="page">
+        <h1 class="item">{% block title %} Administrator Login {% endblock %}</h1>
+        
+        <div class="item">
+            {% if err %}
+                <p>{{ err }}</p>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('main.admin') }}">
+                {{ form.csrf_token }}
+                    <div class="form-field">{{ form.username.label }} {{ form.username }}
+                        {% if form.username.errors %}
+                            <ul class="errors">
+                                {% for error in form.username.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-field">{{ form.password.label }} {{ form.password }}
+                        {% if form.password.errors %}
+                            <ul class="errors">
+                                {% for error in form.password.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                <div class="form-field" id="submit">
+                    {{ form.submit }}
+                </div>
+                
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
