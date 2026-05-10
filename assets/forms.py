@@ -12,12 +12,11 @@ COLUMNS = 4
 
 class LoginForm(FlaskForm):
 
-    username = StringField("Enter Username", [DataRequired()])
+    username = StringField("Username", [DataRequired()])
 
     password = PasswordField("Password", [DataRequired()])
-
-    submit = SubmitField("Submit", )
-
+    
+    submit = SubmitField("Login")
 
 class ReservationForm(FlaskForm):
 
