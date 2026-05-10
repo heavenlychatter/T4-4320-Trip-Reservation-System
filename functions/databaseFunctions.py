@@ -36,3 +36,32 @@ def init_db_command():
 def register(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+
+
+def get_reservations():
+    db = get_db()
+    reservations = db.execute("SELECT * FROM reservations").fetchall()
+    return reservations
+
+def get_seats_taken():
+    db = get_db()
+    # returns coordinate pairs of all seats taken in the format (row, column)
+    seats_taken = db.execute("SELECT seatRow, seatColumn FROM reservations").fetchall()
+    return seats_taken
+
+def is_seat_taken(row, column):
+    db = get_db()
+    row_found = db.execute(
+        "SELECT 1 FROM reservations WHERE seatRow = ? AND seatColumn = ?",
+        (row, column),
+    ).fetchone()
+    return row_found is not None
+
+def add_reservation(passenger_name, row, column, eticket):
+    db = get_db()
+    db.execute(
+        "INSERT INTO reservations (passengerName, seatRow, seatColumn, eTicketNumber) "
+        "VALUES (?, ?, ?, ?)",
+        (passenger_name, row, column, eticket),
+    )
+    db.commit()

@@ -1,6 +1,8 @@
+import uuid
 from flask import current_app as app
 from flask import Flask, render_template, Blueprint, request, redirect, url_for, flash
 from .forms import *
+from functions import databaseFunctions
 
 
 main_bp = Blueprint('main', __name__)
@@ -30,10 +32,31 @@ def admin():
         print(f"{e}")
         return redirect(url_for('main.index'))
 
-
+def _build_chart():
+    taken = {(r["seatRow"], r["seatColumn"]) for r in databaseFunctions.get_seats_taken()}
+    return [
+        ["X" if (row, col) in taken else "O" for col in range(COLUMNS)]
+        for row in range(ROWS)
+    ]
 
 @main_bp.route('/reservations', methods=['GET', 'POST'])
 def reservations():
-    pass
+    form = ReservationForm()
+
+    if form.validate_on_submit():
+        row = int(form.row.data)
+        column = int(form.column.data)
+        passenger_name = f"{form.first_name.data} {form.last_name.data}"
+
+        if databaseFunctions.is_seat_taken(row, column):
+            flash(f"Seat (row {row}, seat {column}) is already taken. Choose another.")
+        else:
+            eticket = uuid.uuid4().hex[:10].upper()
+            databaseFunctions.add_reservation(passenger_name, row, column, eticket)
+            flash(f"Reservation confirmed for {passenger_name}. E-Ticket: {eticket}")
+            return redirect(url_for('main.reservations'))
+
+    chart = _build_chart()
+    return render_template('reservations.html', form=form, chart=chart)
 
 

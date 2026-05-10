@@ -2,9 +2,13 @@ from flask_wtf import FlaskForm
 from wtforms import (
     StringField,
     PasswordField,
+    SelectField,
     SubmitField
 )
 from wtforms.validators import DataRequired
+
+ROWS = 12
+COLUMNS = 4
 
 class LoginForm(FlaskForm):
 
@@ -13,3 +17,24 @@ class LoginForm(FlaskForm):
     password = PasswordField("Password", [DataRequired()])
 
     submit = SubmitField("Submit", )
+
+
+class ReservationForm(FlaskForm):
+
+    first_name = StringField("First Name", [DataRequired()])
+
+    last_name = StringField("Last Name", [DataRequired()])
+
+    row = SelectField(
+        "Choose a Row:",
+        choices=[("", "Choose a Row")] + [(str(r), str(r)) for r in range(ROWS)],
+        validators=[DataRequired()],
+    )
+
+    column = SelectField(
+        "Choose a Seat:",
+        choices=[("", "Choose a Seat")] + [(str(c), str(c)) for c in range(COLUMNS)],
+        validators=[DataRequired()],
+    )
+
+    submit = SubmitField("Submit")
